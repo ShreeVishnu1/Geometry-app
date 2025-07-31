@@ -31,15 +31,19 @@ router.post('/analyze', upload.single('image'), (req, res) => {
   const projectRoot = path.join(__dirname, '..', '..');
   const pythonScript = path.join(projectRoot, 'shapefinder.py');
   
+  // Construct the path to the Python executable within the virtual environment
+  const pythonExecutable = path.join(projectRoot, 'venv', 'bin', 'python');
+
   // Check if the Python script exists
   if (!fs.existsSync(pythonScript)) {
     console.error(`Python script not found at ${pythonScript}`);
     return res.status(500).json({ error: 'Shape analysis script not found' });
   }
   
+  const command = `"${pythonExecutable}" "${pythonScript}" "${imagePath}"`;
   console.log(`Processing image: ${imagePath}`);
   console.log(`Python script path: ${pythonScript}`);
-  console.log(`Running command: python "${pythonScript}" "${imagePath}"`);
+  console.log(`Running command: ${command}`);
   
   // Debug project structure
   console.log('Directory contents:');
@@ -51,7 +55,7 @@ router.post('/analyze', upload.single('image'), (req, res) => {
   }
   
   // Execute the Python script
-  exec(`python "${pythonScript}" "${imagePath}"`, (error, stdout, stderr) => {
+  exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error executing Python script: ${error}`);
       console.error(`Stderr: ${stderr}`);

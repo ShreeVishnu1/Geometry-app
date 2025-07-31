@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
                 <div class="image-container">
                     <img src="/assets/square_diagram.png" alt="Diagram of a square">
-                    <img src="/assets/square_real.png" alt="A real-world square">
+                    <img src="/assets/square_real.jpg" alt="A real-world square">
                 </div>
     
                 <h4>Triangle</h4>
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
                 <div class="image-container">
                     <img src="/assets/triangle_diagram.png" alt="Diagram of a triangle">
-                    <img src="/assets/triangle_real.png" alt="A real-world triangle">
+                    <img src="/assets/triangle_real.jpeg" alt="A real-world triangle">
                 </div>
             </div>
         `;
