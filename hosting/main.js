@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const questionEl = document.createElement('div');
             questionEl.className = 'mb-6';
             questionEl.innerHTML = `<p class="font-semibold mb-2">${index + 1}. ${q.question}</p>`;
-            
+
             const optionsEl = document.createElement('div');
             optionsEl.dataset.questionIndex = index;
             q.options.forEach(option => {
@@ -66,15 +66,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function generateCourseContent() {
         const contentDiv = document.getElementById('course-content');
-        
+
         // This version uses corrected paths for local images
         const staticContent = `
             <style>
                 .content-section h4 { font-size: 1.5rem; font-weight: 600; margin-top: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
                 .content-section ul { list-style-type: disc; margin-left: 1.5rem; margin-top: 1rem; }
                 .content-section li { margin-bottom: 0.5rem; }
-                .image-container { display: flex; gap: 1rem; margin-top: 1rem; margin-bottom: 1rem; }
-                .image-container img { width: 200px; height: 150px; object-fit: cover; border-radius: 0.5rem; }
+                .image-container {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 1rem;
+                    margin-top: 1rem;
+                    margin-bottom: 1rem;
+                    align-items: center;
+                }
+                .image-container img {
+                    width: 100%; height: 150px; object-fit: contain; border-radius: 0.5rem; background-color: #f9fafb; /* A light background for any empty space */
+                }
             </style>
     
             <div class="content-section">
@@ -85,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <li>It has no corners and one continuous curved edge.</li>
                 </ul>
                 <div class="image-container">
-                    <img src="/assets/circle_diagram.png" alt="Diagram of a circle">
-                    <img src="/assets/circle_real.png" alt="A real-world circle">
+                    <img src="public/assets/circle_diagram.png" alt="Diagram of a circle">
+                    <img src="public/assets/circle_real.jpg" alt="A real-world circle">
                 </div>
     
                 <h4>Square</h4>
@@ -110,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
-    
+
         contentDiv.innerHTML = staticContent;
     }
 
@@ -122,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) throw new Error('Failed to fetch questions from server.');
-            
+
             const data = await response.json();
             const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
             finalAssessmentQuestions = parsed.questions;
@@ -131,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to get or parse questions from backend:", e);
             finalAssessmentQuestions = [];
         }
-        
+
         if (finalAssessmentQuestions.length === 0) {
             finalAssessmentQuestions = [
                 { question: "A samosa is shaped most like a...", options: ["Circle", "Square", "Triangle", "Rectangle"], answer: "Triangle" },
@@ -147,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let score = 0;
         const container = document.getElementById(containerId);
         const questionDivs = container.querySelectorAll('[data-question-index]');
-        
+
         questionDivs.forEach((div, index) => {
             const selectedRadio = div.querySelector(`input[name="question-${index}"]:checked`);
             if (selectedRadio && questions[index] && selectedRadio.value === questions[index].answer) {
@@ -172,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showPage('login-page');
                 return;
             }
-            
+
             const userPayload = JSON.parse(userPayloadString);
             handleUserFlow(userPayload);
 
@@ -186,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleUserFlow(user) {
         currentUser = user;
-        studentData = user; 
+        studentData = user;
         if (user.role === 'admin') {
             await loadAdminDashboard();
         } else {
@@ -204,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadStudentDashboard() {
         document.getElementById('student-email-display').textContent = `Student: ${currentUser.email}`;
-        
+
         const scores = [ studentData.preAssessmentScore || 0, studentData.finalAssessmentScore || 0 ];
         const maxScore = 5;
 
@@ -239,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (!response.ok) throw new Error('Failed to fetch admin data');
             const data = await response.json();
-            
+
             document.getElementById('avg-pre-score').textContent = data.avgPre.toFixed(2) || 'N/A';
             document.getElementById('avg-post-score').textContent = data.avgPost.toFixed(2) || 'N/A';
 
@@ -280,17 +289,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('goto-shapes-info-btn')?.addEventListener('click', () => {
             showPage('shapes-info-page');
         });
-        
+
         document.getElementById('back-to-content-from-shapes-btn')?.addEventListener('click', () => {
             showPage('content-page');
         });
-        
+
         document.getElementById('logout-btn-shapes')?.addEventListener('click', () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('userPayload');
             showPage('login-page');
         });
-        
+
         // Handle shape image upload and analysis
         document.getElementById('analyze-shape-btn')?.addEventListener('click', async () => {
             const fileInput = document.getElementById('shape-image');
@@ -298,12 +307,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Please select an image first');
                 return;
             }
-            
+
             loadingSpinner.style.display = 'flex';
-            
+
             const formData = new FormData();
             formData.append('image', fileInput.files[0]);
-            
+
             try {
                 const token = localStorage.getItem('authToken');
                 const response = await fetch(`${API_BASE_URL}/shapes/analyze`, {
@@ -311,12 +320,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
-                
+
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`Failed to analyze image: ${errorText}`);
                 }
-                
+
                 const data = await response.json();
                 document.getElementById('uploaded-image').src = data.imageUrl;
                 document.getElementById('detected-shape-name').textContent = data.shape;
@@ -343,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Login failed');
-                
+
                 localStorage.setItem('authToken', data.token);
                 localStorage.setItem('userPayload', JSON.stringify(data.user));
                 await handleUserFlow(data.user);
@@ -391,10 +400,10 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingSpinner.style.display = 'flex';
             const score = calculateScore('pre-assessment-questions', preAssessmentQuestions);
             const token = localStorage.getItem('authToken');
-            
+
             await fetch(`${API_BASE_URL}/scores/pre`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
@@ -405,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('userPayload', JSON.stringify(currentUser));
             await handleUserFlow(currentUser);
         });
-        
+
         document.getElementById('submit-final-assessment-btn').addEventListener('click', async () => {
             loadingSpinner.style.display = 'flex';
             const score = calculateScore('final-assessment-questions', finalAssessmentQuestions);
@@ -413,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             await fetch(`${API_BASE_URL}/scores/final`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
