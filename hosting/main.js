@@ -4,10 +4,6 @@ import './style.css';
 document.addEventListener('DOMContentLoaded', () => {
     // The base URL for our new backend server.
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-    
-    // Debug information
-    console.log('API_BASE_URL:', API_BASE_URL);
-    console.log('Environment variables:', import.meta.env);
 
     // DOM Elements
     const pages = document.querySelectorAll('.page');
@@ -68,59 +64,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-// In hosting/main.js
-// In hosting/main.js
-function generateCourseContent() {
-    const contentDiv = document.getElementById('course-content');
+    function generateCourseContent() {
+        const contentDiv = document.getElementById('course-content');
+        
+        // This version uses corrected paths for local images
+        const staticContent = `
+            <style>
+                .content-section h4 { font-size: 1.5rem; font-weight: 600; margin-top: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
+                .content-section ul { list-style-type: disc; margin-left: 1.5rem; margin-top: 1rem; }
+                .content-section li { margin-bottom: 0.5rem; }
+                .image-container { display: flex; gap: 1rem; margin-top: 1rem; margin-bottom: 1rem; }
+                .image-container img { width: 200px; height: 150px; object-fit: cover; border-radius: 0.5rem; }
+            </style>
     
-    // This version has the corrected image URLs with '&' instead of '&amp;'
-    const staticContent = `
-        <style>
-            .content-section h4 { font-size: 1.5rem; font-weight: 600; margin-top: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
-            .content-section ul { list-style-type: disc; margin-left: 1.5rem; margin-top: 1rem; }
-            .content-section li { margin-bottom: 0.5rem; }
-            .image-container { display: flex; gap: 1rem; margin-top: 1rem; margin-bottom: 1rem; }
-            .image-container img { width: 200px; height: 150px; object-fit: cover; border-radius: 0.5rem; }
-        </style>
-
-        <div class="content-section">
-            <h4>Circle</h4>
-            <ul>
-                <li>A circle is a perfectly round shape.</li>
-                <li>It's defined as all points that are the same distance from a central point.</li>
-                <li>It has no corners and one continuous curved edge.</li>
-            </ul>
-            <div class="image-container">
-                <img src="https://images.pexels.com/photos/1618269/pexels-photo-1618269.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Diagram of a circle">
-                <img src="https://images.pexels.com/photos/14878572/pexels-photo-14878572.jpeg?auto=compress&cs=tinysrgb&w=400" alt="A real-world circle (chapati)">
+            <div class="content-section">
+                <h4>Circle</h4>
+                <ul>
+                    <li>A circle is a perfectly round shape.</li>
+                    <li>It's defined as all points that are the same distance from a central point.</li>
+                    <li>It has no corners and one continuous curved edge.</li>
+                </ul>
+                <div class="image-container">
+                    <img src="/assets/circle_diagram.png" alt="Diagram of a circle">
+                    <img src="/assets/circle_real.png" alt="A real-world circle">
+                </div>
+    
+                <h4>Square</h4>
+                <ul>
+                    <li>A square is a shape with four equal straight sides.</li>
+                    <li>It has four corners, all of which are perfect right angles (90 degrees).</li>
+                </ul>
+                <div class="image-container">
+                    <img src="/assets/square_diagram.png" alt="Diagram of a square">
+                    <img src="/assets/square_real.png" alt="A real-world square">
+                </div>
+    
+                <h4>Triangle</h4>
+                <ul>
+                    <li>A triangle is a shape with three straight sides and three corners (vertices).</li>
+                    <li>The sum of its three angles always equals 180 degrees.</li>
+                </ul>
+                <div class="image-container">
+                    <img src="/assets/triangle_diagram.png" alt="Diagram of a triangle">
+                    <img src="/assets/triangle_real.png" alt="A real-world triangle">
+                </div>
             </div>
-
-            <h4>Square</h4>
-            <ul>
-                <li>A square is a shape with four equal straight sides.</li>
-                <li>It has four corners, all of which are perfect right angles (90 degrees).</li>
-                <li>Examples in India include a carrom board and some types of windows.</li>
-            </ul>
-            <div class="image-container">
-                <img src="https://images.pexels.com/photos/158826/structure-geometry-square-triangle-158826.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Diagram of a square">
-                <img src="https://images.pexels.com/photos/163359/carom-game-carrom-board-game-of-skill-163359.jpeg?auto=compress&cs=tinysrgb&w=400" alt="A real-world square (carrom board)">
-            </div>
-
-            <h4>Triangle</h4>
-            <ul>
-                <li>A triangle is a shape with three straight sides and three corners (vertices).</li>
-                <li>The sum of its three angles always equals 180 degrees.</li>
-                <li>The savory snack, a samosa, is a perfect real-world example of a triangle.</li>
-            </ul>
-            <div class="image-container">
-                <img src="https://images.pexels.com/photos/158827/background-triangle-geometrical-pattern-158827.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Diagram of a triangle">
-                <img src="https://images.pexels.com/photos/2418493/pexels-photo-2418493.jpeg?auto=compress&cs=tinysrgb&w=400" alt="A real-world triangle (samosa)">
-            </div>
-        </div>
-    `;
-
-    contentDiv.innerHTML = staticContent;
-}
+        `;
+    
+        contentDiv.innerHTML = staticContent;
+    }
 
     async function generateFinalAssessmentQuestions() {
         try {
@@ -202,7 +194,7 @@ function generateCourseContent() {
                 renderAssessment('pre-assessment-questions', preAssessmentQuestions);
                 showPage('pre-assessment-page');
             } else if (studentData.finalAssessmentScore === null) {
-                await generateCourseContent();
+                generateCourseContent(); // Now a synchronous function
                 showPage('content-page');
             } else {
                 await loadStudentDashboard();
@@ -295,6 +287,7 @@ function generateCourseContent() {
         
         document.getElementById('logout-btn-shapes')?.addEventListener('click', () => {
             localStorage.removeItem('authToken');
+            localStorage.removeItem('userPayload');
             showPage('login-page');
         });
         
@@ -313,27 +306,18 @@ function generateCourseContent() {
             
             try {
                 const token = localStorage.getItem('authToken');
-                console.log('Sending request to analyze shape...');
                 const response = await fetch(`${API_BASE_URL}/shapes/analyze`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
                 
-                console.log('Response status:', response.status);
-                
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Error response:', errorText);
-                    throw new Error(`Failed to analyze image: ${response.status} ${response.statusText}. ${errorText}`);
+                    throw new Error(`Failed to analyze image: ${errorText}`);
                 }
                 
                 const data = await response.json();
-                console.log('Analysis result:', data);
-                
-                // Display the results
                 document.getElementById('uploaded-image').src = data.imageUrl;
                 document.getElementById('detected-shape-name').textContent = data.shape;
                 document.getElementById('shape-properties').textContent = data.properties;
@@ -345,6 +329,7 @@ function generateCourseContent() {
                 loadingSpinner.style.display = 'none';
             }
         });
+
         document.getElementById('login-btn').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
