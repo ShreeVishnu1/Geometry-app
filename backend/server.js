@@ -21,7 +21,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // For secure backend calls
 // In backend/server.js
 const corsOptions = {
   origin: [
-    'https://your-frontend-name.onrender.com', // For production
+    'https://geometry-app-frontend.onrender.com', // For production
     'http://localhost:5173',                    // For local development
     'http://localhost:5174',                    // For local development (alternative port)
     'http://localhost:5175',                    // For local development (another alternative port)
