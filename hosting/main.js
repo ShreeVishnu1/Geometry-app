@@ -94,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <li>It has no corners and one continuous curved edge.</li>
                 </ul>
                 <div class="image-container">
-                    <img src="public/assets/circle_diagram.png" alt="Diagram of a circle">
-                    <img src="public/assets/circle_real.jpg" alt="A real-world circle">
+                    <img src="/assets/circle_diagram.png" alt="Diagram of a circle">
+                    <img src="/assets/circle_real.jpg" alt="A real-world circle">
                 </div>
     
                 <h4>Square</h4>
