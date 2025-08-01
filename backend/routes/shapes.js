@@ -10,7 +10,11 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    // --- CHANGE IS HERE ---
+    // Always use the same filename to overwrite the previous image.
+    // We keep the original extension (like .jpg or .png).
+    const staticFilename = 'analysis_image' + path.extname(file.originalname);
+    cb(null, staticFilename);
   }
 });
 const upload = multer({ storage });
@@ -21,6 +25,7 @@ router.post('/analyze', upload.single('image'), (req, res) => {
     return res.status(400).send('No image uploaded.');
   }
 
+  // Use path.resolve to get the full, absolute path to the image
   const imagePath = path.resolve(req.file.path);
   
   const options = {
@@ -30,11 +35,10 @@ router.post('/analyze', upload.single('image'), (req, res) => {
 
   PythonShell.run('shapefinder.py', options).then(results => {
     if (results && results[0]) {
-      // The Python script sends a JSON string, so we parse it
       const analysisResult = JSON.parse(results[0]);
       
-      // Construct the full URL for the image
-      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      // Construct the full URL for the image, including a timestamp to beat browser caching
+      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}?v=${Date.now()}`;
       
       res.json({ ...analysisResult, imageUrl });
     } else {
